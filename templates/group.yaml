@@ -1,0 +1,9 @@
+version: 3
+kind: group
+registry: null                 # slug of the feature registry (folder in the hub) or null for a single screen (standalone)
+group: null                    # group id = block of units of one screen in the registry (g1, g2, …); for standalone — main
+status: draft                  # draft | awaiting-approval | approved | awaiting-acceptance | closed — status is moved only by `sbs promote`
+screen: null                   # full path to the screen from the address: "<url> → <action> → …"; written by /sbs:propose at the group's first unit
+approval: null                 # { decision: "verbatim decision from the user", at: "2026-08-25" } — gate 2 (approval of the collected work), one decision per group; filled in by `sbs promote`
+acceptance: null               # { decision: "verbatim decision from the user", at: "2026-08-25" } — gate 3 (group acceptance); filled in by `sbs promote`
+sweep: null                    # { at: "2026-08-25T14:30", rows: ["u1/r1", …] } — sweep before handoff: timestamp and the re-measured rows; written by /sbs:fix

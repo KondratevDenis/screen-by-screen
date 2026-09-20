@@ -1,0 +1,30 @@
+version: 3
+kind: protocol
+registry: null                 # slug of the feature registry (folder in the hub) or null for a single screen with no registry
+unit: null                     # unit id from registry.yaml, or null for a single screen with no registry
+status: draft                  # draft | collected | closed — status is moved only by `sbs promote`; the protocol is closed by the group
+header:
+  state_path: null             # steps from the group's screen (screen in <gid>.group.yaml) to this unit's state; "—" for the default state
+  node: null                   # id of this unit's frame/component in the mockup
+  link: null                   # direct link to this node in the mockup
+  frame_state: null            # the screen's state in the mockup and in the app (e.g. "create, empty form")
+  data_source: mock            # real | mock — where the live screen's data comes from; recorded by /sbs:propose
+etalon:
+  values: []                   # etalon properties from the mockup (the value leads, the screenshot is auxiliary); captured by /sbs:propose; example entry:
+    # - { prop: null, value: null, token: null, node: null }
+  structure: null              # the etalon's layout tree in one line, e.g. "Drawer > Header > Form(3 fields) > Footer"
+  semantics: []                 # mapping of mockup components to code components (figma: component name in the mockup); example entry:
+    # - { figma: null, component: null }
+rows: []                       # protocol rows — diff (a discrepancy) or question (a question to the mockup/user); filled in by /sbs:propose; examples:
+  # - id: r1
+  #   type: diff
+  #   what: null                # what's being compared, in words, e.g. "gap between form fields"
+  #   level: value               # value | structure | semantics
+  #   expected: { value: null, ref: null }   # value and reference to the etalon (node/token)
+  #   actual: { value: null, selector: null } # value and selector in the live app
+  #   status: open                # open | fixed | verified
+  #   remeasure: null             # { value: null, at: "2026-08-25T14:30" } — mandatory for verified, the re-measurement taken after the fix
+  # - id: r2
+  #   type: question
+  #   what: null                  # wording of the question/mockup gap
+  #   decision: null               # verbatim decision from the user; the question is closed once non-empty

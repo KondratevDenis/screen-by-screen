@@ -1,0 +1,21 @@
+version: 3
+kind: registry
+feature: null                  # feature slug (lowercase latin letters, digits, hyphen) = folder name in the hub; written by /sbs:explore
+source: null                   # link to the page/frame of the whole feature's mockup; captured by /sbs:explore
+status: draft                  # draft | awaiting-approval | approved | closed — status is moved only by `sbs promote`
+questions: []                  # slicing questions, filled in by /sbs:explore; example of one question:
+  # - id: q1
+  #   text: null               # verbatim question to the user about a unit's boundaries/composition
+  #   units: []                 # only for a re-slicing declaration question: ids of units added after approval that this answer authorizes
+  #   decision: null           # verbatim answer from the user; null = the question is still open
+units: []                      # units of the check, filled in by /sbs:explore; example of one unit:
+  # - id: u1
+  #   title: null              # short human-readable name of the unit
+  #   node: null                # id of this unit's frame/component in the mockup
+  #   link: null                # direct link to this node in the mockup
+  #   bounds: null              # what is / isn't part of the unit (e.g. "excluding the calendar")
+  #   group: null              # group id: units of one screen go as a block; a lone unit is a group of one; excluded units have no group
+  #   status: pending           # pending | in-progress | closed | excluded
+  #   protocol: null            # path to the unit's protocol.yaml relative to the feature folder — set by `sbs new protocol` when created
+  #   reason: null               # mandatory when status: excluded — why this unit isn't checked
+approval: null                 # { decision: "verbatim decision from the user", at: "2026-08-22", units: [u1, …], groups: { g1: [u1] } } — filled in by `sbs promote` at gate 1, don't edit by hand; units is the seal on the set of units the signature covers; groups is the grouping seal
