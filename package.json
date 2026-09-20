@@ -2,17 +2,49 @@
   "name": "screen-by-screen",
   "version": "1.0.0",
   "description": "Layout-vs-mockup checks for AI coding agents, screen by screen: a CLI that keeps the paperwork honest and installs the sbs skills into your project",
-  "keywords": ["figma", "layout", "design-review", "ai", "agent", "claude-code", "codex", "cli"],
+  "keywords": [
+    "figma",
+    "layout",
+    "design-review",
+    "ai",
+    "agent",
+    "claude-code",
+    "codex",
+    "cli"
+  ],
   "homepage": "https://github.com/KondratevDenis/screen-by-screen",
-  "repository": { "type": "git", "url": "git+https://github.com/KondratevDenis/screen-by-screen.git" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KondratevDenis/screen-by-screen.git"
+  },
   "bugs": "https://github.com/KondratevDenis/screen-by-screen/issues",
   "license": "MIT",
   "author": "Denis Kondratev",
   "type": "module",
-  "bin": { "sbs": "./bin/sbs.js" },
-  "files": ["bin", "src", "rules", "templates", "skills", "commands", "SCHEMA.md", "README.md", "CHANGELOG.md"],
-  "engines": { "node": ">=20" },
-  "publishConfig": { "access": "public" },
-  "scripts": { "test": "node --test test/*.test.mjs" },
-  "dependencies": { "js-yaml": "^5.3.0" }
+  "bin": {
+    "sbs": "bin/sbs.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "rules",
+    "templates",
+    "skills",
+    "commands",
+    "SCHEMA.md",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "js-yaml": "^5.3.0"
+  }
 }
