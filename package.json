@@ -1,6 +1,6 @@
 {
   "name": "screen-by-screen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Layout-vs-mockup checks for AI coding agents, screen by screen: a CLI that keeps the paperwork honest and installs the sbs skills into your project",
   "keywords": [
     "figma",

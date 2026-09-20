@@ -97,7 +97,7 @@ rows:
 | registry | awaiting-approval → approved | `approval.decision` non-empty; every `questions[].decision` non-empty; the transition writes the `approval.units` and `approval.groups` seals |
 | registry | approved → closed | every unit is `closed` or `excluded`; auto-triggered after the last group closes (or by hand) |
 | protocol | draft → collected | `validate` green; `header` filled in (all 5 fields); `etalon.values` non-empty; the registry (if any) is `approved`, the unit exists and isn't excluded |
-| protocol | collected → closed | only cascaded from the group; a direct promote is rejected: "the protocol is closed by the group: sbs promote <group>" |
+| protocol | collected → closed | only cascaded from the group; a direct promote is rejected: "the group is what closes the protocol - sbs promote <group>" |
 | group | draft → awaiting-approval | `validate` green; `screen` non-empty; every unit of the group has a protocol in `collected` |
 | group | awaiting-approval → approved | `approval.decision` non-empty; there are diff rows among the members |
 | group | awaiting-approval → closed | `approval.decision` non-empty; no diff rows in any member; every member's question row has a `decision`; cascade: protocols → closed, units → closed, the registry auto-closes |
@@ -121,25 +121,25 @@ status is only done via `reopen <form> --reason "..."`:
 ### Domain checks in `validate` (beyond structural ones; exact messages)
 
 - `rows` non-empty while `etalon.values` is empty → `protocol.yaml: rows: diff rows with an empty etalon - etalon comes first (staging)`
-- `etalon.values` non-empty while `header` isn't filled in → `protocol.yaml: etalon: etalon with an empty header — header first (staging order)`
+- `etalon.values` non-empty while `header` isn't filled in → `protocol.yaml: etalon: etalon with an empty header - header comes first (staging)`
 - diff row: `status: verified`, `remeasure: null` → `protocol.yaml: rows[r1]: status verified, but remeasure is incomplete - verified only after a re-measurement (value and at)`; `verified` requires both `remeasure.value` **and** `remeasure.at`
 - diff row: `status: fixed|verified`, but the unit's **group** isn't `approved`+ → `protocol.yaml: rows[r1]: fixes before the collected approval (gate 2)`
 - diff row without `expected.value`/`expected.ref` → `protocol.yaml: rows[r1]: expected has no value/ref — number against number, both ends are mandatory` (symmetric for `actual`)
 - a "from scratch" unit, the element doesn't exist in the app yet: `actual.value: "element doesn't exist"`, `actual.selector` — the expected place (the parent/container where the element will go); both ends stay filled in
-- question row with `status`/`expected`/`actual`/`remeasure` → `protocol.yaml: rows[r2]: question doesn't carry diff-row fields`
+- question row with `status`/`expected`/`actual`/`remeasure` → `protocol.yaml: rows[r2]: question does not carry diff-row fields (extra: …; a question is closed by a recorded decision)`
 - the protocol references a `registry` that doesn't exist in the hub / the unit isn't found → `protocol.yaml: registry: registry 'X' not found in the hub` / `unit: unit 'uN' is missing from the registry`
 - protocol: the unit has no group form logged in the folder → `protocol.yaml: group: the unit's group form wasn't found in the folder — it's created by sbs new protocol`
-- protocol: `status: closed` while the group isn't `closed` → `protocol.yaml: status: closed while the group is in status … — the protocol is closed by the group`
+- protocol: `status: closed` while the group isn't `closed` → `protocol.yaml: status: closed while the group is in status … - the group is what closes the protocol`
 - registry: an `excluded` unit with no `reason` → `registry.yaml: units[u3]: excluded with no reason`
 - registry: a non-excluded unit outside `draft` with no `group` → `registry.yaml: units[uN]: no group — every unit in progress belongs to a group`
-- registry: an `excluded` unit with a `group` → `registry.yaml: units[uN]: excluded with a group — an excluded unit isn't part of a batch`
+- registry: an `excluded` unit with a `group` → `registry.yaml: units[uN]: excluded with group - an excluded unit is not part of the batch`
 - registry: units of the same group aren't consecutive → `registry.yaml: units[uN]: group gX is split - units of the same group must be contiguous in units[] (one run)`
 - registry: **grouping seal** — a unit's `group` diverges from `approval.groups` → `registry.yaml: units[uN]: group "…" diverges from the grouping seal (approval.groups: …) — reshuffling groups after approval is authorized by a declaration question`. A registry with `approval.units` but no `approval.groups` is legacy, the grouping check doesn't apply
 - registry `approved`, but `approval` is empty (edited by hand) → `registry.yaml: approval: status approved with no recorded decision — statuses are moved by promote`
 - **seal (re-slicing):** an `approved`/`closed` registry with an `approval.units` seal, and `units[]` has a unit outside the seal with no declaration question (`questions[]` with `units: [id]` and a non-empty `decision`) → `registry.yaml: units[u22]: unit added after the slicing approval (seal approval.units) - adding it later is authorized by a declaration question: questions[] with units: [u22] and a recorded decision`. The same guard is in `sbs new protocol`. A registry with no seal (approved before it existed) is legacy, the check doesn't apply until the next approval
 - `questions[].units` references a unit that doesn't exist → `registry.yaml: questions[q2]: units — unit "u9" not found in the registry`
 - group: the registry has no units with `group: gX` → `<gid>.group.yaml: group: registry '…' has no units with group: gX — group has no members`
-- group: a sweep row isn't found among the members' diff rows → `<gid>.group.yaml: sweep: rows — row "…" not found among the members' diff rows`
+- group: a sweep row isn't found among the members' diff rows → `<gid>.group.yaml: sweep: rows - row "…" not found among the group members' diff rows`
 - group: `status awaiting-acceptance|closed` with diff rows and no recorded sweep → structural error in the sweep invariant
 - group: `closed`, but members aren't closed → `<gid>.group.yaml: group members not closed (…) — closing cascades from the group's promote`
 - group: file name ≠ `group` → error (same as feature/folder)
