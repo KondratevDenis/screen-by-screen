@@ -37,6 +37,11 @@ Before a group is handed off, a sweep recorded in the group form's `sweep` field
 full rule lives in `group.md`; `promote`-ing a group to acceptance without a recorded sweep won't
 go through.
 
+Walk it by the group's `screen`, don't find your own way back. Getting to the state costs more than
+measuring it, and a path re-derived at fix time is a second path: it can land on a neighbouring
+entity and re-measure the wrong screen into `remeasure`. Where the recorded path doesn't reach the
+state any more, that is a finding about the path — fix `screen`, don't walk around it.
+
 ## Who moves statuses
 
 Writing to the form (fixing a row, `remeasure`) is done by whoever runs the stage; moving the

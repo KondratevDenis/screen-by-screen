@@ -23,6 +23,26 @@ state, not from the address again; there's no need to leave the screen between u
 the screen is recorded once: in the group's `screen`, the full path from the address, at the
 first unit. The step for a specific state goes into the protocol's `state_path` (`etalon.md`).
 
+`screen` records the route, not a snapshot of one walk. Two constraints keep it usable a week
+later:
+
+- **No entity ids in the path.** Name what you open the way a human reads it — the meeting series,
+  the circle, the card title — and let the walk resolve the id. Ids rot, and a stale one rarely
+  fails loudly.
+- **Enter the state by the regular path, not by its address.** A direct address to an overlay or a
+  drawer opens *something* even when it points at a neighbouring entity, and every measurement that
+  follows looks perfectly plausible. Reaching the state the way a user reaches it is what proves
+  the state belongs to the entity under check.
+
+Before measuring, confirm arrival: a sign that this is the state and not the one next to it. The
+sign answers "am I here" — the control is present, the error is shown under the field — not "how
+many are there". A count is a measurement; wiring it into the check turns a legitimate change in
+the data into a broken walk.
+
+Keeping the path in runnable form pays for itself — the walk is re-run rather than re-derived on
+every return to the group. Whether the tooling allows that, and where such a file lives, is the
+business of the tool skill: the form records what to walk, not how to drive the screen.
+
 ## Presenting and decisions
 
 Group gates are raised to the human **in one message**, covering each unit: the etalon,
