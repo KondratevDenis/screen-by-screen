@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+README: badges, a plain-language "What it is for" section, examples of mockup and browser tools
+the agent can bring, and a vocabulary table mapping `sbs` terms (mockup, etalon, unit, group) to
+their everyday names. package.json: description and keywords rewritten around the terms people
+search for (design review, visual QA, Figma, Playwright, Claude Code, Codex).
+
 ## 1.0.2 — 2026-09-23
 
 The group's `screen` is a route, not a snapshot of one walk: no entity ids in the path, enter a

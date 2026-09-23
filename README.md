@@ -1,10 +1,35 @@
 # screen-by-screen (sbs)
 
-A CLI plus four agent skills that turn "check the layout against the mockup" into a paper
-trail with explicit human gates: what to check is written down, what's wrong is measured
-number against number, and nothing moves to the next stage without a recorded decision. Built
-for people using Claude Code or Codex on UI work. Form contract: [SCHEMA.md](SCHEMA.md);
-stage rules: [rules/](rules/).
+[![npm version](https://img.shields.io/npm/v/screen-by-screen)](https://www.npmjs.com/package/screen-by-screen)
+[![CI](https://github.com/KondratevDenis/screen-by-screen/actions/workflows/ci.yml/badge.svg)](https://github.com/KondratevDenis/screen-by-screen/actions/workflows/ci.yml)
+[![node >= 20](https://img.shields.io/node/v/screen-by-screen)](package.json)
+[![license: MIT](https://img.shields.io/npm/l/screen-by-screen)](LICENSE)
+
+Design review for AI coding agents: compare the implemented UI against the Figma design (or any
+other mockup) screen by screen, with human approval gates. Visual QA that is measured, not
+eyeballed — every discrepancy is a number from the mockup against a number from the live DOM.
+
+`sbs` is a CLI plus four agent skills for Claude Code and Codex. It turns "check the layout
+against the mockup" into a paper trail: what to check is written down, what's wrong is measured
+number against number, and nothing moves to the next stage without a recorded decision. Form
+contract: [SCHEMA.md](SCHEMA.md); stage rules: [rules/](rules/).
+
+## What it is for
+
+- **Design-to-code review.** A designer hands over Figma frames, an agent implements them, and
+  someone has to verify the result. `sbs` makes the agent do that verification the slow way:
+  slice the design into screens and states, read the reference values off each node, measure
+  the live screen, log every gap as a row with both numbers.
+- **Visual QA without pixel diffs.** Screenshot comparison can't tell a layout bug from a
+  rendering difference. `sbs` forbids pixel-by-pixel comparison even as a supporting signal and
+  requires computed styles and design tokens on both sides instead.
+- **Human gates for agent work.** The human signs off on the list of screens, on each group of
+  findings, and on the final acceptance. Only the bookkeeping command `sbs promote` moves a form
+  forward, and only when those signatures are recorded verbatim.
+- **Bring your own MCP servers.** The core never names a specific design or browser tool. It
+  works with whatever the agent already has for reading the mockup (Figma MCP, a design-tokens
+  export, a plugin) and inspecting the live app (Playwright MCP, Chrome DevTools MCP, a
+  Storybook). See [Bring your own tools](#bring-your-own-tools).
 
 ## Install
 
@@ -207,14 +232,35 @@ its status field directly.
 ## Bring your own tools
 
 The core is agnostic to how you read a mockup or inspect a live screen — it never names a
-specific mockup source or browser automation tool (Figma is just one example of where a mockup
-might live). To use `sbs`, the agent needs, from its own skills or MCP servers:
+specific mockup source or browser automation tool. To use `sbs`, the agent needs, from its own
+skills or MCP servers:
 
 - **A way to read the mockup**: node properties, design tokens, and links to specific nodes.
-- **A way to inspect the live screen**: computed styles, DOM structure, and screenshots.
+  Typical sources: the Figma Dev Mode MCP server, a community Figma MCP, a design-tokens export,
+  Penpot or Sketch via their APIs.
+- **A way to inspect the live screen**: computed styles, DOM structure, and screenshots. Typical
+  sources: Playwright MCP, Chrome DevTools MCP, Puppeteer, or a Storybook instance the agent can
+  drive.
 
 Wiring those up is out of scope for this package — bring the skills or MCP servers you already
-use for design and browser work.
+use for design and browser work. The rules and forms only talk about "the mockup" and "the live
+screen", so swapping a tool doesn't change the paperwork.
+
+## Vocabulary
+
+The package uses a few words of its own. Their everyday equivalents:
+
+| In `sbs` | Elsewhere |
+|---|---|
+| mockup | the design: a Figma file, frame, or any other source of truth for the UI |
+| etalon | the reference values read off the mockup node: spacing, color, typography, tokens |
+| unit | one screen, or one state of a screen (empty, filled, error) |
+| group | all units of one screen, reviewed and accepted together |
+| registry | the list of units for a feature; the scope of the design review |
+| protocol | the per-unit report: header, etalon, and rows of findings |
+| row | one finding: a `diff` (expected vs. actual, both measured) or a `question` to the human |
+| hub | `.screen-by-screen/`: config, decision journals, and the forms while work is in progress |
+| gate | a point where a human decision is recorded before the work may continue |
 
 ## License
 

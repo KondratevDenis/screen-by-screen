@@ -1,16 +1,26 @@
 {
   "name": "screen-by-screen",
   "version": "1.0.2",
-  "description": "Layout-vs-mockup checks for AI coding agents, screen by screen: a CLI that keeps the paperwork honest and installs the sbs skills into your project",
+  "description": "Design review for AI coding agents: compare the implemented UI against the Figma mockup screen by screen, with measured diffs and human approval gates. CLI + skills for Claude Code and Codex.",
   "keywords": [
     "figma",
-    "layout",
     "design-review",
-    "ai",
-    "agent",
+    "visual-qa",
+    "design-qa",
+    "ui-review",
+    "layout",
+    "mockup",
+    "design-to-code",
+    "pixel-perfect",
+    "playwright",
+    "mcp",
     "claude-code",
     "codex",
-    "cli"
+    "agent-skills",
+    "ai-agent",
+    "cli",
+    "frontend",
+    "ux"
   ],
   "homepage": "https://github.com/KondratevDenis/screen-by-screen",
   "repository": {
