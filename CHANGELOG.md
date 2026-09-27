@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.3 — 2026-09-27
 
 README: badges, a plain-language "What it is for" section, examples of mockup and browser tools
 the agent can bring, and a vocabulary table mapping `sbs` terms (mockup, etalon, unit, group) to

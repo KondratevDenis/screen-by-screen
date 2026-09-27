@@ -1,6 +1,6 @@
 {
   "name": "screen-by-screen",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Design review for AI coding agents: compare the implemented UI against the Figma mockup screen by screen, with measured diffs and human approval gates. CLI + skills for Claude Code and Codex.",
   "keywords": [
     "figma",
