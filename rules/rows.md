@@ -43,6 +43,24 @@ of discrepancy, not scattered across `diff` rows for every small difference insi
 row doesn't carry the fields of a diff row (`level`, `expected`, `actual`, `status`, `remeasure`):
 only `what` and `decision` (`../SCHEMA.md`).
 
+## Findings before human questions
+
+A provisional question row can preserve a gap while investigation continues. Recording it
+does not require immediately contacting the user. Before asking, apply `decisions.md`:
+refresh pertinent forms and decisions, check equivalent states and responsive constraints,
+and inspect supported component APIs.
+
+If observation resolves an apparent discrepancy during collection, correct the collection
+data and remove or correct the invalid provisional row. Explain the correction in the group
+summary. Do not write your factual inference into `decision` as if a human had said it, or
+add an ad hoc YAML field. Preserve historical verified rows and closed forms; `verified`
+requires the authorized fixing and remeasurement stage.
+
+A clearly applicable prior decision can close a question row with its original answer and
+source. An actual difference with two measured ends stays a diff and follows the existing
+approval, fix, and remeasurement path. Do not turn it into a question simply to ask whether
+an already authorized repair should happen. Question presentation belongs to `group.md`.
+
 ## Red flags
 
 - "The screen is in a different mode, I'll log a difference for each field" → one `question` row

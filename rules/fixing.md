@@ -13,8 +13,10 @@ isn't `open` (already `fixed`/`verified`), or a group that isn't `approved` yet,
 
 A side temptation noticed along the way ("I'll fix this behavior too while I'm at it", "this thing
 here is also off, even though there's no row for it") doesn't get fixed on the spot. It goes into
-the same protocol as a **separate `question` row**; the decision on it is up to the user, not the
-fixer's guess.
+the same protocol as a **separate `question` row**. Before escalating it, apply `decisions.md`:
+refresh relevant state, investigate the evidence, and reuse a clearly applicable decision with
+its source. Ask only the remaining choice using `group.md`'s format. Recording a finding does
+not demand an immediate interruption or grant permission to fix unrelated work.
 
 ## Fix → re-measure → verified
 
@@ -68,13 +70,21 @@ A change bigger than a unit (a new screen/state that isn't in the registry) isn'
 it's **registry re-slicing**: raise it at the `/sbs:explore` level (`registry.md`, section
 "Re-slicing"), don't let it block your unit.
 
+If a shared component changes, identify the checked units it affects and follow the existing
+group reopen/recheck path for affected closed work. Follow any CLI instruction to reopen a
+closed registry too. Old acceptance is not evidence for the changed state; verify affected
+behavior, record new measured differences, and obtain the required fresh sweep and acceptance.
+Unrelated groups stay outside this work's authorization.
+
 ## Handoff for acceptance
 
 Once every row of every member of the group is `verified` by the sweep (`sweep` is recorded) and
 every question has a decision: `sbs promote <group>` moves the group to `awaiting-acceptance`.
 Before that, show the user a summary of the group: for each unit, what was fixed, what's still an
-open question and with what decision. Record the decision on acceptance as a whole verbatim in the
-group's `acceptance.decision`, not as a retelling in chat past the form.
+exception and its recorded decision. Use `group.md`'s concise result format and wait for the
+human's actual acceptance. Record that verdict verbatim in `acceptance.decision`; work approval
+never substitutes for acceptance. On resumption, refresh state before requesting a missing
+verdict, so an acceptance already recorded is not requested again.
 
 ## Red flags
 

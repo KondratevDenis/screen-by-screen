@@ -10,11 +10,11 @@ export const RULE_WHAT = {
   'etalon.md': 'a unit\'s etalon: header and node properties - what the mockup promises and how it\'s proven',
   'rows.md': 'protocol rows: number against number, what gets filed as a diff and what as a question',
   'fixing.md': 'fixing against an approved protocol: re-check radius, re-measurement, verified',
-  'group.md': 'working as a group: batch = group, shown in one message, the sweep and recording it',
-  'decisions.md': 'the log of past runs\' decisions: when a question to the human is closed by a recorded decision, and when it gets asked again',
+  'group.md': 'group work and approval boundaries, concise summaries, individual questions, and the recorded sweep',
+  'decisions.md': 'fresh active and archived decisions, evidence checks before questions, scoped reuse and provenance',
 };
 
-// `waiting` - the human's stage: the core doesn't advise how to work, it reminds what's awaited and where to write it.
+// Waiting stages include the rules for refreshing decisions and presenting the missing choice.
 export const STAGES = {
   'registry/draft': {
     task: 'slice the feature mockup into units and record boundary questions',
@@ -25,11 +25,11 @@ export const STAGES = {
   },
   'registry/awaiting-approval': {
     task: 'the slicing has been sent for approval - waiting for the human\'s decision',
-    rules: [],
+    rules: ['registry.md', 'decisions.md'],
     waiting: 'wait for the human\'s decision and record it verbatim in the form: approval.decision (and decision for every question in questions[])',
     write: 'approval: { decision, at }, questions[].decision',
     done: 'the decision on the slicing and on every question is recorded verbatim',
-    next: 'sbs promote <form> - record the slicing approval',
+    next: 'sbs promote <form> - record explicit slicing approval; continue collection only within the user-authorized task',
   },
   'registry/approved': {
     task: 'the slicing is approved - create unit protocols; if the mockup was updated - re-slice (registry.md)',
@@ -68,18 +68,18 @@ export const STAGES = {
   },
   'group/draft': {
     task: 'collect the material for every unit in the group (protocols up to collected) and the screen path',
-    rules: ['group.md'],
+    rules: ['group.md', 'decisions.md'],
     write: 'screen; unit material - in their protocols (sbs instructions <feature>/<unit>.protocol.yaml)',
     done: 'every unit in the group has a protocol in collected; screen is recorded',
     next: 'sbs promote <form> - send the group for approval',
   },
   'group/awaiting-approval': {
     task: 'the group has been sent for approval - waiting for the human\'s decision',
-    rules: [],
+    rules: ['group.md', 'decisions.md'],
     waiting: 'wait for the human\'s decision and record it verbatim: the group\'s approval.decision; decisions on questions - in rows[].decision of the member protocols',
     write: 'approval: { decision, at }, rows[].decision on members\' questions',
     done: 'the decision is recorded verbatim',
-    next: 'sbs promote <form> - record approval of the collected material (gate 2); with no diff rows, promote closes the group right away',
+    next: 'sbs promote <form> - record explicit group approval; continue authorized fixes with the existing fix skill; with no diff rows, the existing closure cascade applies',
   },
   'group/approved': {
     task: 'fix the layout by the members\' rows, re-check and run the sweep',
@@ -90,7 +90,7 @@ export const STAGES = {
   },
   'group/awaiting-acceptance': {
     task: 'the group has been sent for acceptance - waiting for the human\'s decision',
-    rules: [],
+    rules: ['group.md', 'decisions.md'],
     waiting: 'wait for the human\'s decision and record it verbatim in the form: acceptance.decision',
     write: 'acceptance: { decision, at }',
     done: 'the acceptance is recorded verbatim',
@@ -237,7 +237,7 @@ export function promotePlan(entry, hub) {
           if (m.form?.status !== 'collected') push(m.rel, `protocol in status ${m.form?.status ?? 'empty'} - a group goes to approval with its members collected`);
         }
       }
-      return { to: 'awaiting-approval', reasons, next: `show the group to the user in one message, record the decision in approval.decision, then sbs promote ${label}` };
+      return { to: 'awaiting-approval', reasons, next: `show the concise group scope, resolve remaining questions using the current rules, record explicit group approval in approval.decision, then sbs promote ${label}` };
     }
     if (from === 'awaiting-approval') {
       if (!filled(form.approval?.decision)) push('approval', 'the user\'s decision is not recorded - gate 2 only passes with a verbatim decision');
@@ -248,7 +248,7 @@ export function promotePlan(entry, hub) {
         }
         return { to: 'closed', reasons, next: 'the group is checked: no discrepancies, the fix and acceptance stages are skipped', apply: () => closeGroupCascade(hub, entry, members) };
       }
-      return { to: 'approved', reasons, next: `fix per the members' rows and recheck: sbs instructions ${label}` };
+      return { to: 'approved', reasons, next: `continue the authorized fixes with the existing fix skill; load current group instructions: sbs instructions ${label}` };
     }
     if (from === 'approved') {
       for (const { m, row } of questionRows) {

@@ -69,6 +69,10 @@ npx sbs update
 `update` rewrites the generated skill and command files in place; it never touches the hub or
 anything you've written into it.
 
+Run this after upgrading through your project's normal package workflow, then use a fresh
+agent session that reads the refreshed skills. Files updated on disk do not prove that an
+already running agent has loaded them.
+
 ## Supported tools
 
 | Tool | What `init` writes | How you invoke it |
@@ -78,10 +82,11 @@ anything you've written into it.
 
 ## Workflow
 
-Four skills, run in order per feature:
+Four skills own the stages of a feature check:
 
 **`/sbs:explore`** — slices the mockup into units (a screen or a screen state) and builds the
-feature registry. Anything disputable becomes a batch of questions instead of a guess. The
+feature registry. Candidate boundary questions are recorded, then investigated against fresh
+evidence and existing decisions before the unresolved choices reach the user. The
 user signs off on the list of units — **gate 1, slicing approval** — and that approval is
 sealed: the exact set of units it covers is recorded.
 
@@ -98,6 +103,28 @@ way into the hub's decision journals (`.screen-by-screen/decisions/`) and moves 
 folder into the archive.
 
 Only `sbs promote` moves a form's status, and only when the paperwork is clean.
+
+Before asking, the agent refreshes the relevant active forms and all three decision journals,
+checks comparable states and responsive constraints, and investigates supported component
+APIs. A clearly applicable decision is reused with its original wording and source, even
+before archival. General policies apply within their stated scope; a narrow precedent does
+not become a blanket design-system rule.
+
+You receive one concise overview of the group, followed by one substantive question at a time
+unless you request a batch. Each question identifies the screen and element, links to the
+mockup, explains the consequences, and recommends an option. Available crops or highlights
+provide context; measurements remain the evidence. The group stays the unit of approval.
+
+Once you explicitly approve the presented group and authorize its fixes, the agent records
+that decision, promotes the group, and continues with the existing fix skill without asking
+you to launch it separately. An answer such as "keep the default radius" resolves that question
+only. Work approval is never final acceptance: after fixes and the sweep, you review the
+result. A group with no diff rows still closes on explicit approval once its questions are
+resolved.
+
+Continuation stays within your request: a slicing-only task ends after slicing; a full check
+can continue into collection after slicing approval; approving one group does not authorize
+fixes in another. Required choices and evidence/access blockers still need your input.
 
 ## The renovation analogy
 
@@ -133,8 +160,9 @@ The system reads like an apartment renovation done against a signed contract: th
 **1. The estimate (`/sbs:explore`).** The foreman walks the whole project and builds an
 estimate: every room gets its own line, including closets and dark corners (empty states,
 error states, popups). Anything the foreman wants to exclude needs a recorded reason.
-Disputable boundaries ("is the balcony its own room or part of the living room?") are batched
-into a set of questions. The client reviews the list and signs. The moment of signing,
+Disputable boundaries ("is the balcony its own room or part of the living room?") are recorded
+together, checked against existing decisions, and discussed one choice at a time after the
+scope overview. The client reviews the list and signs. The moment of signing,
 bookkeeping puts on a **seal**: it records, by name, exactly which set of rooms the signature
 covers.
 
@@ -144,12 +172,14 @@ application), and writes up the punch list — number against number, nothing ey
 report for a room is an unsigned inventory: the client doesn't sign it, the punch list is just
 `collected`. What gets signed is the **whole section's work order** — every room on one riser at
 once, as a single list. No room in the section has an open item — the signature closes the
-whole section at once. No code is touched at this stage.
+whole section at once. Collection does not change code. Once the client approves the shown
+work and authorizes repairs, the foreman starts fixing without another instruction to begin.
 
 **3. Fixing (`/sbs:fix`).** The foreman fixes only what's in the signed work order, **section by
 section**. Every fixed item is **re-measured with the same tool** — "painted" doesn't mean
 "level"; only a control measurement closes an item. Anything noticed along the way isn't
-quietly fixed — it becomes a question. Before handoff, a control walk covers the whole section:
+quietly fixed — it is recorded and investigated before any unresolved choice reaches the client.
+Before handoff, a control walk covers the whole section:
 every closed item is re-measured in one pass, and the result is recorded in the work order's
 `sweep`. Once the walk is clean and the questions are answered, the section goes to the client
 for acceptance. Accepting the last section also closes the estimate — the renovation is done.
@@ -158,9 +188,11 @@ for acceptance. Accepting the last section also closes the estimate — the reno
 foreman copies every client decision out of it into the office's logs
 (`.screen-by-screen/decisions/<class>.yaml`, kept in git), then moves the paperwork itself into
 storage (`<hub>/archive/`) — it drops out of the summaries. On the next job, the office checks
-the log first: if the same question came up before and the circumstances match, it works from
-the recorded answer without bothering the client; if circumstances changed, it asks again,
-showing the old entry ([rules/decisions.md](rules/decisions.md)).
+the current forms and logs first: if the same question came up before and its conditions match,
+it works from the recorded answer without bothering the client. A different room alone does
+not invalidate a general policy. Changed conditions or conflicting decisions are investigated,
+then only the unresolved choice is brought back with the old decision
+([rules/decisions.md](rules/decisions.md)).
 
 **Only bookkeeping moves the paperwork.** Form statuses change only through `sbs promote`, and
 only when the paperwork is clean: the client's decisions are recorded verbatim, measurements

@@ -10,14 +10,23 @@ goes into the header, how to record a mockup gap. Field format: `../SCHEMA.md` (
 Filled in first, before the etalon (`../SCHEMA.md`: an etalon with an empty header is a `validate`
 error, "header first"). Three checks before comparing:
 
-1. **Component identity.** The same UI block is assembled from a different set of components in
-   the mockup than in the code → that's a redesign: not into `header`, but straight into one
-   `question` row, "decide as a whole"; pixel-level discrepancies inside it don't get logged one
-   by one.
+1. **Component identity.** Inspect the supported API, variants, tokens, and relevant usage before
+   classifying a different appearance as redesign or a design-system limitation. A confirmed
+   different composition needing a human choice becomes one `question` row, "decide as a
+   whole"; small differences inside that unresolved composition aren't logged one by one.
 2. **Mode and state.** Which state the frame carries (create/edit, empty/filled, default/error) and
    whether the live screen has been brought into it: the result goes into `frame_state`.
 3. **Data source.** Whether the live screen runs on real or mock data: the result goes into
    `data_source`; content discrepancies caused by mocks are a data question, not a layout diff.
+
+Compare equivalent mode, state, and data assumptions at a comparable viewport. Inspect fill,
+hug, fixed, min/max, and responsive constraints before interpreting a frame's width as a fixed
+requirement. A 1440px frame with fill columns does not by itself require 1440px-wide content in
+a narrower viewport. Verify the applicable project decision and actual layout behavior.
+
+Apply `decisions.md` before escalating an apparent mismatch. Changing mock data, obtaining
+access, and other side effects remain subject to host permissions and task scope; these rules
+do not authorize changing mocks or inventing missing behavior.
 
 The path to the screen lives in the group: `screen` in `<gid>.group.yaml`, the full path from the
 address, written at the group's first unit. The protocol's header carries only `state_path`: the
@@ -45,6 +54,10 @@ shown) → record it right away as a `question` row in `rows[]` (see `rows.md`),
 get to it later", and not with a value eyeballed off the screenshot. Put it off and the gap gets
 lost between sessions; a verdict from a screenshot with no property behind it is an impression, not
 an etalon.
+
+Recording a provisional question preserves the finding; it does not require immediately
+contacting the user. Investigate and apply `decisions.md` first. Correct a gap resolved by
+observation as collection data under `rows.md`, without fabricating a human decision.
 
 ## Red flags
 

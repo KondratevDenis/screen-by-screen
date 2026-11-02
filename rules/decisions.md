@@ -1,10 +1,11 @@
-# decisions — the decision log of past runs
+# decisions — fresh evidence and scoped decision reuse
 
-Core rule for the stages where questions to the human arise (`registry/draft`, `registry/approved`,
-`protocol/draft`, `group/approved`). Owner of the format for the `.screen-by-screen/decisions/`
-logs and the rules for consuming them: when a question isn't asked again but is closed by a past
-decision. The logs are written by `/sbs:archive` when a feature is archived. Read by `/sbs:explore`,
-`/sbs:propose`, `/sbs:fix`, `/sbs:archive`.
+Core rule for collection, fixing, and waiting stages: `registry/draft`,
+`registry/awaiting-approval`, `registry/approved`, `protocol/draft`, `group/draft`,
+`group/awaiting-approval`, `group/approved`, and `group/awaiting-acceptance`. Owner of the
+check before asking, scoped reuse of active decisions, and the format and use of the
+`.screen-by-screen/decisions/` logs. The logs are written by `/sbs:archive` when a feature
+is archived; active decisions can be reused before archival. Read by all four skills.
 
 ## What a log is
 
@@ -38,32 +39,50 @@ Record format:
 `context` is the facts under which it was decided (nodes, values, composition): by this, the next
 run tells "the same thing" apart from "it changed".
 
-## Before asking: check the log
+## Before asking: refresh and investigate
 
-About to ask the human a question (registry `questions[]`, a protocol question row, a question
-that comes up while fixing), first check the `.screen-by-screen/decisions/` logs (all classes):
+Immediately before sending a substantive question, including one recorded earlier:
 
-- **Matches in substance and the context is the same** (same mockup/code facts as in `context`):
-  don't ask, apply the recorded decision, write it verbatim into the form's `decision` with a
-  reference to the entry ("per log scope/d2"), note it in the summary to the user as a fact, not a
-  question.
-- **Matches in substance but the context changed** (a different node, different values, a new
-  state): ask again, showing the past decision and what changed.
-- **The entry comes from a different feature**: the same rules apply, the class is shared, the
-  feature is only the origin recorded in `source`.
+1. **Refresh relevant state from disk.** Read the pertinent live registry, group, and member
+   protocols, the current task's relevant user decisions, and applicable entries in all three
+   decision journals. A stage-entry snapshot is insufficient when work or answers may have
+   arrived from another session. Read the pertinent forms, not the entire hub indiscriminately.
+2. **Compare equivalent conditions.** Confirm the mockup and live app have the same mode, state,
+   data assumptions, and comparable viewport. Inspect layout constraints and responsive behavior
+   before treating one frame's dimensions as fixed-width requirements.
+3. **Investigate apparent component limitations.** Inspect the supported API, variants, tokens,
+   and relevant usage before declaring that an override is necessary. A screenshot or component
+   name alone does not establish a design-system gap.
+4. **Apply a clearly applicable decision.** Record its original text and source in the existing
+   question `decision` field: an originating form/question for an active decision, or
+   `<class>/<id>` for an archived one (for example, "Keep the clear action — per
+   tasks/u1/r2" or "Retain internal radius — per log ds/d2"). Preserve the original wording;
+   provenance is a reference, not an invented human answer. Note the reuse in the summary.
+5. **Ask only what remains.** A material choice, evidence that cannot be obtained, or work beyond
+   the authorized scope can require the user. State the unresolved choice or specific blocker
+   and its consequence. Do not guess values or loop indefinitely when evidence is unavailable.
 
-A match "in substance" means the subject and class of discrepancy, not the literal wording: "a DS
-Toast instance, nothing to check" matches the same question about a different toast.
+Match the conditions and scope of the decision, not just the wording, node id, or feature.
+A general policy can cover another component when its stated conditions hold. A narrow decision
+about one component stays narrow; there is no global design-system priority.
+
+A changed identifier alone is not a materially changed context. A different supported API,
+state, behavior, dependency, or explicit restriction may be. Investigate that difference and
+ask only for the unresolved choice. Conflicting applicable decisions require clarification.
+The feature in a journal entry is its origin, not a restriction unless the decision says so.
+
+After each answer, re-read affected state before choosing the next action. Reuse does not turn
+a question answer into group approval or final acceptance (`group.md`). This is an agent
+procedure; the CLI supplies rules and mechanical gates, not semantic consent checking.
 
 ## Red flags
 
-- "The question looks familiar, but paging through the logs takes too long" → three class files are
-  cheaper than asking the human again.
-- "I applied the past decision; no need to write it in the form" → the form's `decision` is
-  mandatory, verbatim and with a reference to the entry.
-- "The decision comes from a different feature; I'll double-check just in case" → if the context
-  is the same, apply it; asking again brings back the problem the log was built to solve.
-- "The context seems to have changed, but the decision is probably the same" → a changed context is
-  always a question, showing the past decision.
+- "I read this group when I started" → refresh the relevant forms immediately before asking.
+- "This component has a different id, so I'll ask again" → check the decision's scope and
+  conditions; an explicitly general policy can still apply.
+- "The screenshot proves the component cannot do it" → inspect its supported API and usage.
+- "I applied the past decision; no need to record its source" → preserve both the original
+  answer and its provenance in the form.
+- "The old answer probably applies" → verify conditions; unresolved conflicts need a decision.
 - "I'll start a new class file for this" → classes are fixed (scope / ds / mockup); a new one only
   by human decision.

@@ -6,6 +6,14 @@ validation, status transitions (`promote`/`reopen`), the fact of handoff; the sk
 (`/sbs:explore`, `/sbs:propose`, `/sbs:fix`, `/sbs:archive`) own judgment: slicing, the check method, triage; the
 human owns the decisions (`decision`, `approval`, `acceptance`). Read by all four skills and the CLI; the deterministic contract tests are `test/*.test.mjs` in the repository.
 
+Question answers, approval of the presented group's work, and final acceptance are separate
+records. A user utterance supplies a record only when it actually expresses that decision
+for the shown scope. An answer to the last question is not automatically group approval;
+approval to fix is not acceptance of the result. Skills may continue explicitly authorized
+work without another launch command. This procedure changes neither the v3 transition table
+nor the existing explicit-approval closure cascade for groups with no diff rows. The CLI
+checks mechanical gates, not semantic consent.
+
 ## Form schema v3 (reference)
 
 ### `registry.yaml` (feature registry, lives at `<hub>/<feature>/registry.yaml`)
