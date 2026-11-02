@@ -1,16 +1,16 @@
 # group — working by group
 
-Core rule for the `group/draft` (assembling the batch) and `group/approved` (fixes and sweep)
-stages. Owner of the group method: what a batch is, how to bring the live screen along, how gates
+Core rule for `group/draft` (assembling the batch), `group/approved` (fixes and sweep),
+`group/awaiting-approval`, and `group/awaiting-acceptance`. Owner of the group method: what a batch is, how to bring the live screen along, how gates
 get raised, and what proves a sweep. Field format: `../SCHEMA.md` (`<gid>.group.yaml`, `sweep`,
 `promote` transitions). Read by whoever runs `/sbs:propose` and `/sbs:fix`.
 
 ## Batch: exactly the group
 
 A group is declared by the registry at slicing time: the units of one screen, as a block
-(`units[].group`). The batch of work and of presenting to the human is exactly that: don't pile
-units from other screens into it, and don't hand off half a group. A lone unit is a group of one,
-the same rules apply.
+(`units[].group`). The unit of work and approval is exactly that: don't pile units from other
+screens into it, and don't hand off half a group. A lone unit is a group of one. Conversation
+turns can resolve individual choices while the scope and approval remain the whole group.
 
 A group bigger than five states is a sign that the slicing merged two screens into one, not a
 reason to grow the batch: raise it as a registry-level question (re-slicing, `registry.md`), don't
@@ -45,14 +45,76 @@ business of the tool skill: the form records what to walk, not how to drive the 
 
 ## Presenting and decisions
 
-Group gates are raised to the human **in one message**, covering each unit: the etalon,
-discrepancies, questions (gate 2), or what was fixed and how it was confirmed (gate 3). A decision
-is recorded
-verbatim and at the moment it's given, sorted into the right form: the decision on the group goes
-into the group's `approval.decision` / `acceptance.decision`, decisions on questions go into
-`rows[].decision` of the protocol the question belongs to. One answer covering the whole group is a
-legitimate single wording; an answer that differs by unit is a different decision for each, and a
-shared wording doesn't stand in for them.
+Give one concise overview of the whole group: screen and states, proposed work, resolved
+exceptions and their sources, and outstanding questions. Explain the next authorized action.
+Keep full etalons, raw YAML, and detailed measurements in the protocols.
+
+Before sending a question, apply `decisions.md`. Discuss one remaining substantive choice
+at a time by default; batch only if the user requests it. Each question contains:
+
+1. A human-readable screen and element.
+2. A direct mockup link and an available crop/highlight when it clarifies the issue. Missing
+   image support is not a blocker: use a precise location and link.
+3. The observed conflict and what happens under each relevant choice.
+4. A recommendation with a short reason.
+
+For example: "Tasks — assignee chip. The mockup omits the clear button
+([mockup](https://mockup.example/tasks#assignee)). Removing it leaves no way to unassign the
+current person. I recommend keeping it; removing it would require another unassign action."
+A screenshot provides context; it does not replace measurements.
+
+Record each actual answer verbatim when it arrives. Question answers go into the owning
+protocol's `rows[].decision`; the group verdict goes once into `approval.decision` or
+`acceptance.decision`. A shared decision may resolve several applicable question rows,
+each retaining provenance. Do not repeat the same choice for each row or copy the group
+verdict into unrelated questions. Re-read affected state after each answer.
+
+At acceptance, present one concise result for the whole group: what changed for each unit,
+how remeasurement, the sweep, and project checks confirmed it, and resolved exceptions.
+Keep approval and acceptance at group level, even when questions were discussed individually.
+
+## Continuation after authorization
+
+Stage responsibility does not require ending the conversation. Refresh the group's state and
+route continuation by its current status:
+
+| Current status | Next action |
+|---|---|
+| `draft` | Complete collection and present the group through the propose skill. |
+| `awaiting-approval` | Resolve material questions and record the explicit verdict on the presented scope. Run `sbs promote <group>` for gate 2; if it becomes `approved` and fixing is authorized, load current instructions and invoke the existing fix skill. |
+| `approved` | Use the recorded scoped authorization. Resolve any material question returned from fixing before resuming; if scope and authorization still hold, load current instructions and invoke fix directly. Do not promote again to reconfirm approval: promotion here submits completed work for acceptance. |
+| `awaiting-acceptance` | Present the completed result and request only a missing final verdict. Record actual acceptance and promote to close; handle rejection through reopen. Do not repeat fixes or request work approval. |
+| `closed` | Report the closed result. Changed work follows the existing reopen/recheck rules. |
+
+For an approved group, an answer resolving a missed question does not require repeating gate 2
+when the presented scope and authorization are unchanged. If the answer expands the work,
+present that change and obtain its scoped authorization before fixing it. A question answer
+does not itself grant that authorization.
+
+Use native skill invocation when available; otherwise read and follow the installed skill.
+Do not ask the user to type a separate launch command.
+
+- "Approve g1 and fix the listed differences" authorizes the shown group's fixes. An explicit
+  fix command for an identified, already presented group can also supply that permission.
+  An unidentified command, unseen scope, or unresolved material conflict does not.
+- "Keep the default radius" answers that question only, unless it explicitly also authorizes
+  the presented group. Do not copy the last question answer into `approval.decision`.
+- "Explain the second option" requests explanation. "Do not change code yet" and a
+  collection-only task stop before fixes. When a group verdict is missing, request it once;
+  when explicit scoped authorization is already available, use it.
+- Continue across groups only within the original task. Independent preparation can continue
+  while waiting, but it must not bypass a shared blocker or authorize another group's fixes.
+- After fixes and required checks, present the result and wait for final human acceptance.
+  Work approval never supplies `acceptance.decision`.
+- With zero diff rows, resolved questions, and explicit group approval, retain the existing
+  closure cascade; do not invent a fixing round or separate acceptance.
+- On resumption, refresh persisted state and applicable decisions. Continuation means work in
+  this conversation, not automatic background execution, messaging another session, or
+  relaunching a stopped agent.
+
+The CLI checks mechanical gates, including nonempty decision fields; it does not determine
+semantic consent. A response can fill a decision field only when it actually expresses that
+decision for the presented scope.
 
 ## Sweep
 
@@ -86,10 +148,10 @@ the sweep for the group, and hand it off again.
 
 - "The neighboring screen is small, I'll bring it along in this same batch" → the batch is exactly
   the group.
-- "I'll show the units one at a time, it's clearer that way" → group gates are raised in one
-  message.
-- "The answer's the same for everyone, I'll copy it into each question" → decisions are sorted by
-  form, but the group's shared answer lives once, in the group's form.
+- "I'll get approval for each unit as we discuss its questions" → one overview and one group
+  approval; individual questions do not fragment the gate.
+- "That was the last question, so the group must be approved" → a question answer and the group
+  verdict express different decisions.
 - "I re-measured every row as I went; the sweep is redundant" → re-measuring as you go proves the
   fix, the sweep proves it survived; without a record in `sweep` it didn't happen.
 - "The group is big, I'll block it until it's re-sliced" → raise it as a registry-level question,

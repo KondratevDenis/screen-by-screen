@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Refresh active and archived decisions and investigate component/state/layout evidence before
+  asking the user for a new decision.
+- Present concise group summaries and discuss remaining substantive questions individually.
+- Continue explicitly approved work through existing skills without requiring a separate
+  launch command; preserve human acceptance and existing v3 validation.
+- Make the applicable decision and presentation rules available when resuming waiting stages.
+
 ## 1.0.3 — 2026-09-27
 
 README: badges, a plain-language "What it is for" section, examples of mockup and browser tools

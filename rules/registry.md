@@ -1,7 +1,7 @@
 # registry — slicing a feature into units
 
-Core rule for the `registry/draft` stage (slicing from scratch) and `registry/approved` (re-slicing
-when the mockup is updated). Owner of the slicing rules: what counts as a unit, traversing the
+Core rule for `registry/draft` (slicing from scratch), `registry/awaiting-approval`, and
+`registry/approved` (re-slicing when the mockup is updated). Owner of the slicing rules: what counts as a unit, traversing the
 mockup, the "empty"/"excluded" classes, boundary questions. Field format: `../SCHEMA.md`
 (`registry.yaml`, `units[]`, `questions[]`). Read by whoever runs `/sbs:explore`.
 
@@ -36,10 +36,17 @@ the slicing.
 
 ## Boundary questions
 
-Anything disputable (a sub-feature boundary, a candidate "out of scope", a candidate decoration):
-don't decide it yourself and don't ask piecemeal for every frame; collect it into the registry's
-`questions[]` as one batch with links to the nodes. The decision comes from the user verbatim into
-`questions[].decision`, not into chat past the form, so it isn't lost between messages.
+Collect candidate boundary questions (sub-feature boundaries, exclusions, decoration) in
+`questions[]` with node links so coverage is visible. Present the scope grouped by screen,
+then apply `decisions.md` and discuss the remaining substantive choices one at a time by
+default. A user may request a batch. One-at-a-time discussion does not turn units into separate
+approval gates.
+
+Each question names the screen and element, gives its direct mockup link and a crop/highlight
+when available and helpful, describes the observed conflict and consequences of the choices,
+and recommends an option with a short reason. If images are unavailable, use a precise location
+and link. Keep detailed evidence in the forms. Record the actual answer in
+`questions[].decision`, then re-read affected state before the next question.
 
 ## Unit depth
 
@@ -51,10 +58,16 @@ doesn't know where this unit's etalon ends and another one's begins.
 
 The first `sbs promote <form>` puts the slicing up for approval (`awaiting-approval`); after that,
 show the user the list of units: title, node id, link, reason for excluded ones. Show the list in
-batches: a group with its units, not a flat list. Record the decision on the slicing as a whole
+batches: a group with its units, not a flat list. Give a concise scope overview, explain the next
+authorized action, and resolve remaining choices under "Boundary questions". Record the decision on the slicing as a whole
 verbatim in `approval.decision`; decisions on individual questions go into `questions[].decision`.
 The second `promote` checks both fields (`../SCHEMA.md`, the `registry/awaiting-approval → approved`
 transition table). Without them the approval doesn't go through.
+
+A question answer supplies slicing approval only if it explicitly also approves the presented
+scope. When that approval is already available, record it and promote without asking again.
+After approval, continue collection with the existing propose skill only if the user's task
+includes that check. A slicing-only request ends here.
 
 ## Re-slicing
 
@@ -84,8 +97,8 @@ agent's memory.
 - "The link points to a section, so that's the scope" → traverse the whole top level of the page.
 - "Looks like decoration, I'll exclude it without a reason" → without a `reason` the unit stays in
   the list.
-- "I'll ask about each disputable frame separately" → a batch of questions, all at once, with
-  links.
+- "I'll require approval for each frame because questions are discussed individually" → show
+  the grouped scope once; individual choices do not create per-unit approval gates.
 - "Approval will come anyway, so I won't show the units as a list" → showing the list is mandatory
   before the second `promote`.
 - "The mockup was updated, I'll quietly add the unit; the user will approve the protocol anyway" →
