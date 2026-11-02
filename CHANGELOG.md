@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.4 — 2026-11-02
 
 - Refresh active and archived decisions and investigate component/state/layout evidence before
   asking the user for a new decision.
